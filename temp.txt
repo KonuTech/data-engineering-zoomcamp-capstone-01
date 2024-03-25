@@ -1,0 +1,20 @@
+python -m venv .venv
+source .venv/Scripts/activate
+python.exe -m pip install --upgrade pip
+pip install -r requirements.txt
+
+
+docker network create airflow-kafka
+docker network ls
+
+echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_PROJ_DIR=\"./airflow_resources\"" > .env
+
+docker compose up
+docker compose down
+
+docker compose -f docker-compose-airflow.yaml up
+docker compose -f docker-compose-airflow.yaml down
+
+# SPARK IMAGE:
+docker build -f spark/Dockerfile -t earthquakes/spark:latest --build-arg POSTGRES_PASSWORD=admin  .
+docker rmi earthquakes/spark:latest
