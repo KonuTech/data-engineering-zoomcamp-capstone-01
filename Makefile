@@ -20,10 +20,8 @@ kafka-cluster:
 	docker compose up -d
 
 airflow:
-	@echo "AIRFLOW_UID=$(shell id -u)" > .env
-	@echo "AIRFLOW_PROJ_DIR=\"./airflow_resources\"" >> .env
+	@echo -e "AIRFLOW_UID=$(shell id -u)\nAIRFLOW_PROJ_DIR=\"./airflow_resources\"" > .env
 	docker compose -f docker-compose-airflow.yaml up -d
-
 
 spark-app:
 	docker build -f spark/Dockerfile -t earthquakes/spark:latest --build-arg POSTGRES_PASSWORD=admin .
