@@ -7,7 +7,7 @@ setup:
 	make spark-app
 
 python:
-	apt install python3.10-venv
+	sudo apt install python3.10-venv
 
 env:
 	python3 -m venv .venv
