@@ -20,3 +20,61 @@ docker compose -f docker-compose-airflow.yaml down
 # SPARK IMAGE:
 docker build -f spark/Dockerfile -t earthquakes/spark:latest --build-arg POSTGRES_PASSWORD=admin  .
 docker rmi earthquakes/spark:latest
+
+
+
+
+
+######################################################################################################################################################
+When I tried above I got:
+user@WIN-1DOJEV7SPP7:~/data-engineering-zoomcamp-capstone-01$ make
+sudo apt-get update && sudo apt-get install -y python3-venv
+E: Malformed entry 1 in list file /etc/apt/sources.list.d/docker.list ([option] no value)
+E: The list of sources could not be read.
+make: *** [Makefile:4: python] Error 100
+ChatGPT
+The error message indicates that there's an issue with the Docker repository entry in the docker.list file under /etc/apt/sources.list.d/. This error is occurring because the Docker repository entry is malformed, likely due to an incorrect format.
+
+To resolve this issue, follow these steps:
+
+Correct the Malformed Entry in docker.list:
+Open the docker.list file for editing using a text editor like nano or vim. You need to correct the malformed entry to ensure it follows the correct format for a Debian package repository entry.
+
+Run the following command to open the file in nano:
+
+bash
+Copy code
+sudo nano /etc/apt/sources.list.d/docker.list
+Fix the Malformed Entry:
+In the docker.list file, locate and correct the malformed entry. It should resemble something like:
+
+css
+Copy code
+deb [option] no value
+Remove or correct this line so that it follows the correct format for a Debian package repository entry. It should look something like this:
+
+bash
+Copy code
+deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+Replace focal with your Ubuntu version if it's different.
+
+Save and Exit the Editor:
+After making the necessary changes, save the file and exit the text editor.
+
+Retry the Make Command:
+After correcting the issue with the Docker repository entry, retry running make. It should now proceed without encountering the error.
+
+By following these steps, you should be able to fix the malformed entry in the docker.list file and continue with your make command. If you need further assistance, feel free to ask!
+
+User
+This is what I have in docker.list:
+
+deb [arch= signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu  stable
+ChatGPT
+The issue appears to be with the docker.list file. The entry is missing the signed-by option value. To fix this issue, you need to provide the correct value for the signed-by option.
+
+Here's how you can update the entry in the docker.list file:
+
+plaintext
+Copy code
+deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu focal stable

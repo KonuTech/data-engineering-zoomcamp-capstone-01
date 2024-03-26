@@ -10,7 +10,11 @@ env:
 	pip install -r requirements.txt
 
 network:
-	docker network create airflow-kafka
+	@if ! docker network inspect airflow-kafka >/dev/null 2>&1 ; then \
+        docker network create airflow-kafka ; \
+    else \
+        echo "Network 'airflow-kafka' already exists." ; \
+    fi
 
 kafka-cluster:
 	docker-compose up -d
