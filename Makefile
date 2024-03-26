@@ -1,14 +1,14 @@
 setup:
 	make env && \
 	make network && \
-	kafka-cluster && \
-	airflow && \
-	spark-app
+	make kafka-cluster && \
+	make airflow && \
+	make spark-app
 
 env:
-	python -m venv .venv
+	python3 -m venv .venv
 	source .venv/Scripts/activate
-	python.exe -m pip install --upgrade pip
+	pip install --upgrade pip
 	pip install -r requirements.txt
 
 network:
