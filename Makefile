@@ -1,4 +1,5 @@
 setup:
+	make python && \
 	make env && \
 	make network && \
 	make kafka-cluster && \
