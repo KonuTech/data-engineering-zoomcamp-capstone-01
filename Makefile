@@ -11,16 +11,16 @@ env:
 
 network:
 	@if ! docker network inspect airflow-kafka >/dev/null 2>&1 ; then \
-        docker network create airflow-kafka ; \
-    else \
-        echo "Network 'airflow-kafka' already exists." ; \
-    fi
+		docker network create airflow-kafka ; \
+	else \
+		echo "Network 'airflow-kafka' already exists." ; \
+	fi
 
 kafka-cluster:
-	docker-compose up -d
+	docker compose up -d
 
 airflow:
-	docker-compose -f docker-compose-airflow.yaml up -d && \
+	docker compose -f docker-compose-airflow.yaml up -d && \
 	echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_PROJ_DIR=\"./airflow_resources\"" > .env
 
 spark-app:
