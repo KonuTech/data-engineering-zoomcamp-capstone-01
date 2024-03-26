@@ -22,6 +22,9 @@ docker build -f spark/Dockerfile -t earthquakes/spark:latest --build-arg POSTGRE
 docker rmi earthquakes/spark:latest
 
 
+chmod +x setup.sh
+./setup.sh
+
 
 
 
