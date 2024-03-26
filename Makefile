@@ -5,6 +5,9 @@ setup:
 	make airflow && \
 	make spark-app
 
+python:
+	apt install python3.10-venv
+
 env:
 	python3 -m venv .venv
 	source .venv/Scripts/activate
