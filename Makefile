@@ -20,8 +20,8 @@ kafka-cluster:
 	docker compose up -d
 
 airflow:
-	@echo "AIRFLOW_UID=197609" > .env && \
-    echo "AIRFLOW_PROJ_DIR=./airflow_resources" >> .env && \
+	@echo "AIRFLOW_UID=$(shell id -u)" > .env && \
+	echo 'AIRFLOW_PROJ_DIR="./airflow_resources"' >> .env && \
 	docker compose -f docker-compose-airflow.yaml up -d
 
 spark-app:
