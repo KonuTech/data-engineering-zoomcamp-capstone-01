@@ -1,0 +1,4 @@
+improve startup.sh
+deduplication process, validating uniqueness of each processed partition
+visualize data
+publish vis-es online

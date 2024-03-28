@@ -1,5 +1,5 @@
 CREATE TABLE public.earthquakes (
-    generated BIGINT,
+    generated TIMESTAMP WITH TIME ZONE,
     metadata_url TEXT,
     metadata_title TEXT,
     metadata_status INT,
@@ -7,8 +7,8 @@ CREATE TABLE public.earthquakes (
     count INT,
     mag FLOAT,
     place TEXT,
-    time BIGINT,
-    updated BIGINT,
+    time TIMESTAMP WITH TIME ZONE,
+    updated TIMESTAMP WITH TIME ZONE,
     tz TEXT,
     url TEXT,
     detail TEXT,
@@ -32,5 +32,8 @@ CREATE TABLE public.earthquakes (
     type TEXT,
     title TEXT,
     geometry_coordinates FLOAT[],
+    longitude FLOAT,
+    latitude FLOAT,
+    radius FLOAT,
     id TEXT
 );

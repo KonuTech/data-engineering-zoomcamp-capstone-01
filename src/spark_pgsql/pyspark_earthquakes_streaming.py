@@ -6,9 +6,10 @@ from pyspark.sql.types import (
     LongType,
     IntegerType,
     DoubleType,
-    ArrayType
+    ArrayType,
+    # TimestampType
 )
-from pyspark.sql.functions import from_json, col
+from pyspark.sql.functions import from_json, col, from_unixtime, to_timestamp
 from src.constants import POSTGRES_URL, POSTGRES_PROPERTIES
 
 def create_spark_session() -> SparkSession:
@@ -74,6 +75,9 @@ def create_final_dataframe(df):
         StructField("type",StringType(),True),
         StructField("title",StringType(),True),
         StructField("geometry_coordinates",ArrayType(DoubleType(),True),True),
+        StructField("longitude", DoubleType(), True),
+        StructField("latitude", DoubleType(), True),
+        StructField("radius", DoubleType(), True),
         StructField("id",StringType(),True)
     ])
 
@@ -81,8 +85,47 @@ def create_final_dataframe(df):
     df_out = (
         df.selectExpr("CAST(value AS STRING)")
         .select(from_json(col("value"), schema).alias("data"))
-        .select("data.*")
+        .select(
+            to_timestamp(from_unixtime(col("data.generated") / 1000)).alias("generated"),
+            col("data.metadata_url"),
+            col("data.metadata_title"),
+            col("data.metadata_status"),
+            col("data.api"),
+            col("data.count"),
+            col("data.mag"),
+            col("data.place"),
+            to_timestamp(from_unixtime(col("data.time") / 1000)).alias("time"),
+            to_timestamp(from_unixtime(col("data.updated") / 1000)).alias("updated"),
+            col("data.tz"),
+            col("data.url"),
+            col("data.detail"),
+            col("data.felt"),
+            col("data.cdi"),
+            col("data.mmi"),
+            col("data.alert"),
+            col("data.status"),
+            col("data.tsunami"),
+            col("data.sig"),
+            col("data.net"),
+            col("data.code"),
+            col("data.ids"),
+            col("data.sources"),
+            col("data.types"),
+            col("data.nst"),
+            col("data.dmin"),
+            col("data.rms"),
+            col("data.gap"),
+            col("data.magType"),
+            col("data.type"),
+            col("data.title"),
+            col("data.geometry_coordinates"),
+            col("data.longitude"),
+            col("data.latitude"),
+            col("data.radius"),
+            col("data.id")
+        )
     )
+
     return df_out
 
 def start_streaming(df_parsed, spark):

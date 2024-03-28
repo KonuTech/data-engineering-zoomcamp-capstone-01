@@ -47,6 +47,10 @@ class EarthquakeEvent:
     type: str
     title: str
     geometry_coordinates: List[float]
+    # Geo fields
+    longitude: float
+    latitude: float
+    radius: float
     id: str
 
 
@@ -109,6 +113,11 @@ def query_data():
     for feature in features:
         properties: dict = feature['properties']
         geometry: List[float] = feature['geometry']['coordinates']
+
+         # Extracting latitude, longitude, and radius from geometry_coordinates
+        longitude = geometry[0]
+        latitude = geometry[1]
+        radius = geometry[2]
         
         # Initialize a data class object for the current earthquake event
         earthquake_data: EarthquakeEvent = EarthquakeEvent(
@@ -148,6 +157,9 @@ def query_data():
             type=feature['type'],
             title=properties['title'],
             geometry_coordinates=geometry,
+            longitude=longitude,
+            latitude=latitude,
+            radius=radius,
             id=feature['id']
         )
 
