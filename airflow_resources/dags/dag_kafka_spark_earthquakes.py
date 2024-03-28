@@ -7,13 +7,10 @@ from datetime import datetime
 from src.kafka_client.kafka_stream_earthquakes import stream
 
 
-start_date = datetime.today() - timedelta(days=1)
-
-
 default_args = {
     "owner": "airflow",
-    "start_date": start_date,
-    "retries": 0,  # number of retries before failing the task
+    "start_date": datetime(2000, 1, 1),  # Starting from the beginning of the year 2000
+    "retries": 1,  # number of retries before failing the task
     "retry_delay": timedelta(seconds=5),
 }
 
@@ -21,14 +18,17 @@ default_args = {
 with DAG(
     dag_id="minibatch_earthquakes",
     default_args=default_args,
-    schedule_interval=timedelta(days=1),
-    catchup=False,
+    schedule_interval='*/5 * * * *',  # Schedule every 5 minutes
+    catchup=True,
+    max_active_runs=1,  # Set to control concurrency
+    tags=["earthquakes"]  # Add the "earthquakes" tag
 ) as dag:
 
 
     kafka_producer = PythonOperator(
         task_id="task_kafka_producer",
         python_callable=stream,
+        op_kwargs={'execution_date': '{{ execution_date }}'},  # Access execution_date from op_kwargs
         dag=dag,
     )
 

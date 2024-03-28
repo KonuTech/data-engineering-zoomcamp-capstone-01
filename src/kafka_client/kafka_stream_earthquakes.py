@@ -1,12 +1,15 @@
 from dataclasses import dataclass, field
 from typing import List, Union
 from collections import Counter
-import datetime
 import json
 import requests
 import kafka.errors
 from kafka import KafkaProducer
 import logging
+from datetime import datetime, timedelta
+
+# Set up logging configuration
+logging.basicConfig(level=logging.INFO)
 
 
 @dataclass
@@ -69,6 +72,7 @@ def create_kafka_producer():
 
     return producer
 
+
 def extract_key_values(data: Union[dict, list], flattened_data: dict, parent_key: str = ''):
     """
     Recursively extract key-value pairs from nested JSON data
@@ -87,19 +91,33 @@ def extract_key_values(data: Union[dict, list], flattened_data: dict, parent_key
             new_key = f"{parent_key}_{i}" if parent_key else str(i)
             extract_key_values(item, flattened_data, new_key)
 
+
+# def query_earthquakes_api(params: dict) -> dict:
+#     base_url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
+#     response = requests.get(base_url, params=params)
+#     return response.json()
+
 def query_earthquakes_api(params: dict) -> dict:
     base_url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
-    response = requests.get(base_url, params=params)
+    formatted_params = {
+        key: value.isoformat() if isinstance(value, datetime) else value
+        for key, value in params.items()
+    }
+    url = base_url + '?' + '&'.join([f"{key}={value}" for key, value in formatted_params.items()])
+    logging.info(f"Query URL: {url}")
+    response = requests.get(url)
     return response.json()
 
-def query_data():
-    # Get the current date
-    current_date = datetime.date.today().isoformat()
+
+
+def query_data(start_time, end_time):
+    start_time_iso = start_time.replace(tzinfo=None).isoformat()
+    end_time_iso = end_time.replace(tzinfo=None).isoformat()
 
     params: dict = {
         "format": "geojson",
-        "starttime": current_date,
-        # "endtime": "2024-03-11",
+        "starttime": start_time_iso,
+        "endtime": end_time_iso,
         "minmagnitude": "0"
     }
 
@@ -107,21 +125,17 @@ def query_data():
     features: List[dict] = result['features']
     metadata: dict = result['metadata']
 
-    # Initialize a list to hold earthquake data
     data: List[EarthquakeEvent] = []
 
     for feature in features:
         properties: dict = feature['properties']
         geometry: List[float] = feature['geometry']['coordinates']
 
-         # Extracting latitude, longitude, and radius from geometry_coordinates
         longitude = geometry[0]
         latitude = geometry[1]
         radius = geometry[2]
-        
-        # Initialize a data class object for the current earthquake event
+
         earthquake_data: EarthquakeEvent = EarthquakeEvent(
-            # Metadata fields
             generated=metadata['generated'],
             metadata_url=metadata['url'],
             metadata_title=metadata['title'],
@@ -129,7 +143,6 @@ def query_data():
             api=metadata['api'],
             count=metadata['count'],
 
-            # Earthquake event fields
             mag=properties['mag'],
             place=properties['place'],
             time=properties['time'],
@@ -163,37 +176,39 @@ def query_data():
             id=feature['id']
         )
 
-        # Append the data class object to the list
         data.append(earthquake_data)
 
-    # Initialize a Counter object to count unique IDs
     unique_ids = Counter()
 
     for event in data:
         unique_ids[event.id] += 1
 
-    # Convert list of data class objects to JSON
     json_data = [vars(event) for event in data]
 
-    # Display JSON data
-    # for event in json_data:
-    #     print(json.dumps(event))
-
-    # Display unique IDs count
-    print(f"Unique IDs Count: {len(unique_ids)}")
+    logging.info(f"Unique IDs Count: {len(unique_ids)}")
 
     return json_data
 
-def stream():
-    """
-    Writes the API data to Kafka topic
-    """
-    producer = create_kafka_producer()
-    results = query_data()
 
-    # Send each JSON document to Kafka
+def stream(**context):
+    execution_date = context['execution_date']
+    logging.info(f"Execution Date: {execution_date}")
+
+    current_time = datetime.fromisoformat(execution_date)
+    logging.info(f"Current Time: {current_time}")
+
+    start_time = current_time - timedelta(minutes=5)
+    logging.info(f"Start Time: {start_time}")
+
+    end_time = current_time
+    logging.info(f"End Time: {end_time}")
+
+    producer = create_kafka_producer()
+    results = query_data(start_time, end_time)
+
     for kafka_data in results:
         producer.send("earthquakes", json.dumps(kafka_data).encode("utf-8"))
+
 
 if __name__ == "__main__":
     stream()
