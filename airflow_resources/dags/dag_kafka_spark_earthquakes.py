@@ -9,8 +9,8 @@ from src.kafka_client.kafka_stream_earthquakes import stream
 
 default_args = {
     "owner": "airflow",
-    "start_date": datetime(2000, 1, 1),  # Starting from the beginning of the year 2000
-    "retries": 1,  # number of retries before failing the task
+    "start_date": datetime(2024, 1, 1),  # Starting from the beginning of the year 2000
+    "retries": 2,  # number of retries before failing the task
     "retry_delay": timedelta(seconds=5),
 }
 
@@ -20,7 +20,7 @@ with DAG(
     default_args=default_args,
     schedule_interval='*/5 * * * *',  # Schedule every 5 minutes
     catchup=True,
-    max_active_runs=1,  # Set to control concurrency
+    max_active_runs=3,  # Set to control concurrency
     tags=["earthquakes"]  # Add the "earthquakes" tag
 ) as dag:
 

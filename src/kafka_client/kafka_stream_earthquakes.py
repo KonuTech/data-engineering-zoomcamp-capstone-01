@@ -5,6 +5,7 @@ import json
 import requests
 import kafka.errors
 from kafka import KafkaProducer
+from kafka.admin import KafkaAdminClient, NewTopic
 import logging
 from datetime import datetime, timedelta
 
@@ -91,11 +92,6 @@ def extract_key_values(data: Union[dict, list], flattened_data: dict, parent_key
             new_key = f"{parent_key}_{i}" if parent_key else str(i)
             extract_key_values(item, flattened_data, new_key)
 
-
-# def query_earthquakes_api(params: dict) -> dict:
-#     base_url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
-#     response = requests.get(base_url, params=params)
-#     return response.json()
 
 def query_earthquakes_api(params: dict) -> dict:
     base_url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
@@ -210,5 +206,17 @@ def stream(**context):
         producer.send("earthquakes", json.dumps(kafka_data).encode("utf-8"))
 
 
+# def delete_and_create_topic(topic_name):
+#     admin_client = KafkaAdminClient(bootstrap_servers='localhost:9092')
+
+#     # Delete the topic
+#     admin_client.delete_topics([topic_name])
+
+#     # Recreate the topic
+#     new_topic = NewTopic(name=topic_name, num_partitions=1, replication_factor=1)
+#     admin_client.create_topics([new_topic])
+
+
 if __name__ == "__main__":
     stream()
+    # delete_and_create_topic('earthquakes')

@@ -1,4 +1,4 @@
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import (
     StructType,
     StructField,
@@ -128,14 +128,46 @@ def create_final_dataframe(df):
 
     return df_out
 
-def start_streaming(df_parsed, spark):
+# def start_streaming(df_parsed, spark):
+#     """
+#     Starts the streaming to table spark_streaming.rappel_conso in postgres
+#     """
+#     query = df_parsed.writeStream.foreachBatch(
+#         lambda batch_df, _: (
+#             batch_df.limit(5).show(),  # Print the first 5 rows of the batch
+#             batch_df.write.jdbc(
+#                 POSTGRES_URL, "earthquakes", "append", properties=POSTGRES_PROPERTIES
+#             )
+#         )
+#     ).trigger(once=True) \
+#         .start()
+
+#     return query.awaitTermination()
+
+
+def start_streaming(df_parsed: DataFrame, spark):
     """
     Starts the streaming to table spark_streaming.rappel_conso in postgres
     """
+
+    # Load existing ids
+    df_existing_ids = spark.read.jdbc(
+        POSTGRES_URL, "earthquakes", properties=POSTGRES_PROPERTIES
+    ).select("id")
+
     query = df_parsed.writeStream.foreachBatch(
         lambda batch_df, _: (
-            batch_df.limit(5).show(),  # Print the first 5 rows of the batch
-            batch_df.write.jdbc(
+            # Subtract existing ids from the batch
+            batch_df.alias("new").join(
+                df_existing_ids.alias("old"),
+                batch_df["id"] == df_existing_ids["id"],
+                "leftanti"
+            ).limit(5).show(),  # Print the first 5 rows of the new batch
+            batch_df.alias("new").join(
+                df_existing_ids.alias("old"),
+                batch_df["id"] == df_existing_ids["id"],
+                "leftanti"
+            ).write.jdbc(
                 POSTGRES_URL, "earthquakes", "append", properties=POSTGRES_PROPERTIES
             )
         )
@@ -143,6 +175,7 @@ def start_streaming(df_parsed, spark):
         .start()
 
     return query.awaitTermination()
+
 
 def write_to_postgres():
     spark = create_spark_session()
