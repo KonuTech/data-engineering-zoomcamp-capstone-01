@@ -7,9 +7,11 @@ from datetime import datetime
 from src.kafka_client.kafka_stream_earthquakes import stream
 
 
+start_date = datetime.today() - timedelta(minutes=10)
+
 default_args = {
     "owner": "airflow",
-    "start_date": datetime(2024, 1, 1),  # Starting from the beginning of the year 2000
+    "start_date": start_date,
     "retries": 2,  # number of retries before failing the task
     "retry_delay": timedelta(seconds=5),
 }
@@ -20,7 +22,7 @@ with DAG(
     default_args=default_args,
     schedule_interval='*/5 * * * *',  # Schedule every 5 minutes
     catchup=True,
-    max_active_runs=3,  # Set to control concurrency
+    max_active_runs=1,  # Set to control concurrency
     tags=["earthquakes"]  # Add the "earthquakes" tag
 ) as dag:
 

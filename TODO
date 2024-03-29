@@ -1,4 +1,4 @@
-improve startup.sh
-deduplication process, validating uniqueness of each processed partition
-visualize data
-publish vis-es online
+1 improve startup.sh
+2 deduplication process, validating uniqueness of each processed partition
+3 STREAMLIT visualize data
+4 LOCAL CLIENT publish somehow the app with vises online
