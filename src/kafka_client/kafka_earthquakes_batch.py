@@ -93,31 +93,16 @@ def extract_key_values(data: Union[dict, list], flattened_data: dict, parent_key
             extract_key_values(item, flattened_data, new_key)
 
 
-def query_earthquakes_api(params: dict) -> dict:
-    base_url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
-    formatted_params = {
-        key: value.isoformat() if isinstance(value, datetime) else value
-        for key, value in params.items()
-    }
-    url = base_url + '?' + '&'.join([f"{key}={value}" for key, value in formatted_params.items()])
+def query_earthquakes_api() -> dict:
+    base_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
+    url = base_url
     logging.info(f"Query URL: {url}")
     response = requests.get(url)
     return response.json()
 
 
-
-def query_data(start_time, end_time):
-    start_time_iso = start_time.replace(tzinfo=None).isoformat()
-    end_time_iso = end_time.replace(tzinfo=None).isoformat()
-
-    params: dict = {
-        "format": "geojson",
-        "starttime": start_time_iso,
-        "endtime": end_time_iso,
-        "minmagnitude": "0"
-    }
-
-    result: dict = query_earthquakes_api(params)
+def query_data():
+    result: dict = query_earthquakes_api()
     features: List[dict] = result['features']
     metadata: dict = result['metadata']
 
@@ -186,37 +171,16 @@ def query_data(start_time, end_time):
     return json_data
 
 
-def stream(**context):
+def batch(**context):
     execution_date = context['execution_date']
     logging.info(f"Execution Date: {execution_date}")
 
-    current_time = datetime.fromisoformat(execution_date)
-    logging.info(f"Current Time: {current_time}")
-
-    start_time = current_time - timedelta(minutes=5)
-    logging.info(f"Start Time: {start_time}")
-
-    end_time = current_time
-    logging.info(f"End Time: {end_time}")
-
     producer = create_kafka_producer()
-    results = query_data(start_time, end_time)
+    results = query_data()
 
     for kafka_data in results:
         producer.send("earthquakes", json.dumps(kafka_data).encode("utf-8"))
 
 
-# def delete_and_create_topic(topic_name):
-#     admin_client = KafkaAdminClient(bootstrap_servers='localhost:9092')
-
-#     # Delete the topic
-#     admin_client.delete_topics([topic_name])
-
-#     # Recreate the topic
-#     new_topic = NewTopic(name=topic_name, num_partitions=1, replication_factor=1)
-#     admin_client.create_topics([new_topic])
-
-
 if __name__ == "__main__":
-    stream()
-    # delete_and_create_topic('earthquakes')
+    batch()
