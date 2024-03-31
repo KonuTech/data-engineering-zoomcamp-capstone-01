@@ -58,7 +58,7 @@ def main() -> None:
     # Fetch data from PostgreSQL database
     df, max_generated = fetch_data_from_postgres()
     if df is not None:
-        title = f"Earthquakes - mini batch (5 minutes) - last update: {max_generated}"
+        title = f"Earthquakes - mini batch (5 minutes) - last entry: {max_generated}"
         st.set_page_config(
             page_title=title,
             initial_sidebar_state="expanded",
