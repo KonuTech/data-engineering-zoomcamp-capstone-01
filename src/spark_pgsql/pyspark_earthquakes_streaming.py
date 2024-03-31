@@ -7,7 +7,6 @@ from pyspark.sql.types import (
     IntegerType,
     DoubleType,
     ArrayType,
-    # TimestampType
 )
 from pyspark.sql.functions import from_json, col, from_unixtime, to_timestamp
 from src.constants import POSTGRES_URL, POSTGRES_PROPERTIES
@@ -127,22 +126,6 @@ def create_final_dataframe(df):
     )
 
     return df_out
-
-# def start_streaming(df_parsed, spark):
-#     """
-#     Starts the streaming to table spark_streaming.rappel_conso in postgres
-#     """
-#     query = df_parsed.writeStream.foreachBatch(
-#         lambda batch_df, _: (
-#             batch_df.limit(5).show(),  # Print the first 5 rows of the batch
-#             batch_df.write.jdbc(
-#                 POSTGRES_URL, "earthquakes", "append", properties=POSTGRES_PROPERTIES
-#             )
-#         )
-#     ).trigger(once=True) \
-#         .start()
-
-#     return query.awaitTermination()
 
 
 def start_streaming(df_parsed: DataFrame, spark):

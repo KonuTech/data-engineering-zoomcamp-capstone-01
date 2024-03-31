@@ -5,6 +5,13 @@ source .venv/Scripts/activate
 python.exe -m pip install --upgrade pip
 pip install -r requirements.txt
 
+(.venv) WIN-1DOJEV7SPP7 data-engineering-zoomcamp-capstone-01 $ pip list
+Package         Version
+--------------- -------
+pip             24.0
+psycopg2-binary 2.9.9
+setuptools      65.5.0
+
 
 docker network create airflow-kafka
 docker network ls
@@ -29,3 +36,11 @@ chmod +x setup.sh
 
 
 ######################################################################################################################################################
+
+https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson
+
+Got:
+{"type":"Feature","properties":{"mag":2.32,"place":"11 km S of Arroyo, Puerto Rico","time":1711869569090,"updated":1711871080020,"tz":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/pr71444348","detail":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/pr71444348.geojson","felt":null,"cdi":null,"mmi":null,"alert":null,"status":"reviewed","tsunami":0,"sig":83,"net":"pr","code":"71444348","ids":",pr71444348,","sources":",pr,","types":",origin,phase-data,","nst":7,"dmin":0.1082,"rms":0.21,"gap":254,"magType":"md","type":"earthquake","title":"M 2.3 - 11 km S of Arroyo, Puerto Rico"},"geometry":{"type":"Point","coordinates":[-66.0763333333333,17.8606666666667,13.4]},"id":"pr71444348"},
+
+Did not got:
+{"type":"Feature","properties":{"mag":4.9,"place":"7 km SSW of Mamburao, Philippines","time":1711872030438,"updated":1711873289040,"tz":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/us7000m91h","detail":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us7000m91h.geojson","felt":null,"cdi":null,"mmi":null,"alert":null,"status":"reviewed","tsunami":0,"sig":369,"net":"us","code":"7000m91h","ids":",us7000m91h,","sources":",us,","types":",origin,phase-data,","nst":62,"dmin":10.2,"rms":0.92,"gap":113,"magType":"mb","type":"earthquake","title":"M 4.9 - 7 km SSW of Mamburao, Philippines"},"geometry":{"type":"Point","coordinates":[120.5729,13.1604,10]},"id":"us7000m91h"},
