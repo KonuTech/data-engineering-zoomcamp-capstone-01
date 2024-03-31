@@ -8,11 +8,13 @@ from psycopg2 import Error
 import streamlit as st
 import charts
 
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
 # Load .env file
 load_dotenv()
+
 
 def fetch_data_from_postgres() -> Optional[Tuple[pd.DataFrame, str]]:
     """

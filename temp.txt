@@ -5,13 +5,6 @@ source .venv/Scripts/activate
 python.exe -m pip install --upgrade pip
 pip install -r requirements.txt
 
-(.venv) WIN-1DOJEV7SPP7 data-engineering-zoomcamp-capstone-01 $ pip list
-Package         Version
---------------- -------
-pip             24.0
-psycopg2-binary 2.9.9
-setuptools      65.5.0
-
 
 docker network create airflow-kafka
 docker network ls
@@ -31,8 +24,6 @@ docker rmi earthquakes/spark:latest
 
 chmod +x setup.sh
 ./setup.sh
-
-
 
 
 ######################################################################################################################################################
