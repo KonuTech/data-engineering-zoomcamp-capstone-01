@@ -7,7 +7,6 @@ from typing import List, Union
 
 import kafka.errors
 import requests
-from kafka.admin import KafkaAdminClient, NewTopic
 
 from kafka import KafkaProducer
 
@@ -17,6 +16,10 @@ logging.basicConfig(level=logging.INFO)
 
 @dataclass
 class EarthquakeEvent:
+    """
+    Represents an Earthquake Event with relevant metadata and data.
+    """
+
     # Metadata fields
     generated: int
     metadata_url: str
@@ -60,7 +63,7 @@ class EarthquakeEvent:
     id: str
 
 
-def create_kafka_producer():
+def create_kafka_producer() -> KafkaProducer:
     """
     Creates the Kafka producer object
     """
@@ -68,8 +71,7 @@ def create_kafka_producer():
         producer = KafkaProducer(bootstrap_servers=["kafka:9092"])
     except kafka.errors.NoBrokersAvailable:
         logging.info(
-            "We assume that we are running locally, so we use localhost instead of kafka and the external "
-            "port 9094"
+            "Running locally, we use localhost instead of kafka and the external port 9094"
         )
         producer = KafkaProducer(bootstrap_servers=["localhost:9094"])
 
@@ -98,6 +100,9 @@ def extract_key_values(
 
 
 def query_earthquakes_api() -> dict:
+    """
+    Queries the USGS Earthquake API and returns the response data as a dictionary.
+    """
     base_url = (
         "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
     )
@@ -107,7 +112,10 @@ def query_earthquakes_api() -> dict:
     return response.json()
 
 
-def query_data():
+def query_data() -> List[dict]:
+    """
+    Queries earthquake data from the USGS API and processes it into a list of dictionaries.
+    """
     result: dict = query_earthquakes_api()
     features: List[dict] = result["features"]
     metadata: dict = result["metadata"]
@@ -176,8 +184,11 @@ def query_data():
     return json_data
 
 
-def batch(**context):
-    execution_date = context["execution_date"]
+def batch(**context) -> None:
+    """
+    Batch processing function to query earthquake data and send it to Kafka.
+    """
+    execution_date: datetime = context["execution_date"]
     logging.info(f"Execution Date: {execution_date}")
 
     producer = create_kafka_producer()

@@ -178,10 +178,43 @@ To shutdown all Docker images use shutdown.sh script:
 
 Following these steps will help you establish a reproducible environment and set up your project for development or deployment.
 
-### Checking if all works as intended: 
+### Check if everything works as intended: 
 
-Please use below screen shots to visually check if all of the steps/processes are working fine.
- 
+Please use the screenshots below to visually validate if all of the steps/processes are working fine.
+
+Once the Kafka and Airflow images are up and running, the Docker Desktop view of a container should look as shown in the screenshot below.
+<img src="static/docker_01.jpg" width="60%"/>
+```
+For Airflow try: localhost:8080
+```
+After logging in to Airflow with airflow/airflow credentials, we should be able to find and activate the following DAGs:
+
+<img src="static/airflow_01.jpg" width="60%"/>
+
+Minibatch DAG will continue pulling the data from the API every 5 minutes.
+
+<img src="static/airflow_02.jpg" width="60%"/>
+
+The Kafka messages collected under the topic 'earthquakes' can be visually assessed using Kafka UI.
+```
+For Kafka UI try: localhost:8000
+```
+
+<img src="static/kafka_01.jpg" width="60%"/>
+
+Each time the PySpark script is run, a new image will be pulled. The image is up and running only during the processing of the PySpark script. Check DockerOperator() in DAGs.
+
+<img src="static/docker_02.jpg" width="60%"/>
+
+Remember to create a table in PostgreSQL using the schema stored under scripts/earthquakes.sql. The screenshot below shows exemplary data entries pulled from the API using Airflow DAGs.
+
+<img src="static/postgresql_01.jpg" width="60%"/>
+
+Finally, the Streamlit application shows the data stored as a PostgreSQL table as a couple of charts. New entries are taken into account every 5 minutes, naturally, only if any earthquakes during that time interval were reported.
+
+<img src="static/streamlit_01.jpg" width="60%"/>
+
+Hopefully, you were able to make all the pieces work together. Happy coding.
 
 ### Peer review criterias - a self assassment:
 * Problem description
@@ -197,8 +230,6 @@ Please use below screen shots to visually check if all of the steps/processes ar
 * Transformations (dbt, spark, etc)
     * 4 points: Tranformations are defined with dbt, Spark or similar technologies
 * Dashboard
-    * 0 points: No dashboard
-    * 2 points: A dashboard with 1 tile
     * 4 points: A dashboard with 2 tiles
 * Reproducibility
     * 4 points: Instructions are clear, it's easy to run the code, and the code works

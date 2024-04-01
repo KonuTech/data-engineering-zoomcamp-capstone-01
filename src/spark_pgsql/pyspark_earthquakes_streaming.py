@@ -7,7 +7,10 @@ from src.constants import POSTGRES_PROPERTIES, POSTGRES_URL
 
 
 def create_spark_session() -> SparkSession:
-    spark = (
+    """
+    Creates a SparkSession for interacting with Spark.
+    """
+    spark: SparkSession = (
         SparkSession.builder.appName(
             "PostgreSQL Connection with PySpark for Earthquakes Data"
         )
@@ -20,11 +23,11 @@ def create_spark_session() -> SparkSession:
     return spark
 
 
-def create_initial_dataframe(spark_session):
+def create_initial_dataframe(spark_session: SparkSession) -> DataFrame:
     """
     Reads the streaming data and creates the initial dataframe accordingly.
     """
-    df = (
+    df: DataFrame = (
         spark_session.readStream.format("kafka")
         .option("kafka.bootstrap.servers", "kafka:9092")
         .option("subscribe", "earthquakes")
@@ -35,11 +38,11 @@ def create_initial_dataframe(spark_session):
     return df
 
 
-def create_final_dataframe(df):
+def create_final_dataframe(df: DataFrame) -> DataFrame:
     """
     Modifies the initial dataframe, and creates the final dataframe.
     """
-    schema = StructType(
+    schema: StructType = StructType(
         [
             StructField("generated", LongType(), True),
             StructField("metadata_url", StringType(), True),
@@ -81,7 +84,7 @@ def create_final_dataframe(df):
         ]
     )
 
-    df_out = (
+    df_out: DataFrame = (
         df.selectExpr("CAST(value AS STRING)")
         .select(from_json(col("value"), schema).alias("data"))
         .select(
@@ -130,17 +133,17 @@ def create_final_dataframe(df):
     return df_out
 
 
-def start_streaming(df_parsed: DataFrame, spark):
+def start_streaming(df_parsed: DataFrame, spark: SparkSession) -> Any:
     """
-    Starts the streaming to table spark_streaming.rappel_conso in postgres
+    Starts the streaming to table spark_streaming.rappel_conso in PostgreSQL.
     """
 
     # Load existing ids
-    df_existing_ids = spark.read.jdbc(
+    df_existing_ids: DataFrame = spark.read.jdbc(
         POSTGRES_URL, "earthquakes", properties=POSTGRES_PROPERTIES
     ).select("id")
 
-    query = (
+    query: Any = (
         df_parsed.writeStream.foreachBatch(
             lambda batch_df, _: (
                 # Subtract existing ids from the batch
@@ -173,10 +176,13 @@ def start_streaming(df_parsed: DataFrame, spark):
     return query.awaitTermination()
 
 
-def write_to_postgres():
-    spark = create_spark_session()
-    df = create_initial_dataframe(spark)
-    df_parsed = create_final_dataframe(df)
+def write_to_postgres() -> None:
+    """
+    Main function to write streaming data to PostgreSQL.
+    """
+    spark: SparkSession = create_spark_session()
+    df: DataFrame = create_initial_dataframe(spark)
+    df_parsed: DataFrame = create_final_dataframe(df)
     start_streaming(df_parsed, spark=spark)
 
 
