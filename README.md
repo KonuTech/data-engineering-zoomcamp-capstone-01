@@ -3,9 +3,13 @@
 
 This repository contains the final project for the [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp) course provided by [DataTalks.Club](https://datatalks.club/).
 
-The goal of the project is to apply what we have learned during the course. This project aims to develop an exemplary data pipeline using [Apache Airflow](https://airflow.apache.org/docs/apache-airflow/stable/index.html) for [Apache Kafka](https://kafka-python.readthedocs.io/en/master/), [PySpark](https://spark.apache.org/docs/latest/api/python/index.html), and [PostgreSQL](https://www.postgresql.org/). High level perspective of project's architecture is shown on a below diagram.
+The primary objective of this project is to put into practice the knowledge and skills acquired throughout the course. The focus lies on constructing a robust data pipeline employing [Apache Airflow](https://airflow.apache.org/docs/apache-airflow/stable/index.html) in conjunction with [Apache Kafka](https://kafka-python.readthedocs.io/en/master/), [PySpark](https://spark.apache.org/docs/latest/api/python/index.html), and [PostgreSQL](https://www.postgresql.org/). The architectural overview of the project is depicted in the diagram below, providing a high-level perspective of the system's design and interactions.
 
 <img src="static/diagram_architecture.png" width="60%"/>
+
+Building upon the earlier components, including the utilization of [Apache Airflow](https://airflow.apache.org/docs/apache-airflow/stable/index.html) for orchestration, [Apache Kafka](https://kafka-python.readthedocs.io/en/master/) for real-time data streaming, [PySpark](https://spark.apache.org/docs/latest/api/python/index.html) for data processing, and [PostgreSQL](https://www.postgresql.org/) for data storage, this project aims to demonstrate the seamless integration of these technologies to facilitate efficient data ingestion, processing, and data analysis.
+
+
 
 ## Data source
 
@@ -28,21 +32,6 @@ Meanwhile, the daily DAG is responsible for monitoring and handling potential la
 
 Overall, these two Airflow DAGs work in tandem to maintain the integrity and timeliness of seismic data ingestion, offering a robust solution for continuous data processing and analysis.
 
-## Training
-
-The experiments conducted resulted in several different training runs, using various architectures of CNNs (convolutional neural networks). Various versions of pre-trained models were employed in the hope of improving the quality of the champion model. The impact of so-called Transfer Learning can be observed both [here](https://github.com/KonuTech/machine-learning-zoomcamp-capstone-02/blob/main/notebooks/02_get_champion_binary_classifier.ipynb) and on [Kaggle](https://www.kaggle.com/code/konutech/machine-learning-zoomcamp-pizza-classifier/notebook), where you can run the notebook responsible for training the champion model yourself.
-
-The list of pre-trained models used in experiments where transfer learning approach was applied:
-* Xception
-* EfficientNetB3
-* InceptionV3
-* EfficientNetB5
-* VGG16
-
-## Model deployment and serving
-
-The model was first tested as a containerized Flask app. Afterwards, the model was served as a Kind Kubernetes cluster. To see how to apply the model, look into the details below.
-
 ### Applied technologies
 
 | Name             | Scope                             | Description                                                                                                            |
@@ -58,30 +47,30 @@ The model was first tested as a containerized Flask app. Afterwards, the model w
 
 Project Structure
 ------------
-    ├── data
-    │   ├── pizza_not_pizza
-    │   ├── not_pizza
-    │   ├── pizza
-    ├── k8s
-    │   ├── pizza-model
-    │   │   ├── assets
-    │   │   ├── variables
-    ├── models
-    ├── notebooks
-    │   ├── training_logs
-    │   │   ├── pizza_classification
-    │   │   │   │   ├── 20240106-175439
-    │   │   │   │   ├── train
-    │   │   │   │   ├── validation
-    |   │   │   │   ├── 20240106-181636
-    │   │   │   │   ├── train
-    │   │   │   │   ├── validation
-    |
-    |
-    |
-    ├── scoring
-    │   ├── logs
-    │   ├── models
+
+    ├── .streamlit/
+    │
+    ├── airflow_resources/
+    │   ├── config/
+    │   ├── dags/
+    │   │   └── src/
+    │   └── plugins/
+    │
+    ├── kafka/
+    │   ├── config/
+    │   └── data/
+    │       ├── __cluster_metadata-0/
+    │       └── earthquakes-0/
+    │
+    ├── scripts/
+    │
+    ├── spark/
+    │
+    ├── src/
+    │   ├── kafka_client/
+    │   └── spark_pgsql/
+    │
+    ├── static/
 
 ## Reproducibility
 
