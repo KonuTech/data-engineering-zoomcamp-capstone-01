@@ -7,21 +7,22 @@ from datetime import datetime
 from src.kafka_client.kafka_earthquakes_batch import batch
 
 
-start_date = datetime.today() - timedelta(minutes=10)
+start_date = datetime.today() - timedelta(days=1)
 
 default_args = {
     "owner": "airflow",
     "start_date": start_date,
     "retries": 2,  # number of retries before failing the task
     "retry_delay": timedelta(seconds=5),
-    'timezone': 'America/Los_Angeles'
+    'timezone': 'America/Los_Angeles',
+    'depends_on_past': False,
 }
 
 
 with DAG(
     dag_id="earthquakes-batch-daily",
     default_args=default_args,
-    schedule_interval='50 23 * * *',  # Schedule every 5 minutes
+    schedule_interval="50 23 * * *",  # Schedule every 23:50
     catchup=True,
     max_active_runs=1,  # Set to control concurrency
     tags=["earthquakes", "daily"]  # Add the "earthquakes" tag
