@@ -183,6 +183,7 @@ Following these steps will help you establish a reproducible environment and set
 Please use the screenshots below to visually validate if all of the steps/processes are working fine.
 
 Once the Kafka and Airflow images are up and running, the Docker Desktop view of a container should look as shown in the screenshot below.
+
 <img src="static/docker_01.jpg" width="60%"/>
 ```
 For Airflow try: localhost:8080
