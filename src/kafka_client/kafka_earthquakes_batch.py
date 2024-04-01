@@ -1,13 +1,15 @@
-from dataclasses import dataclass, field
-from typing import List, Union
-from collections import Counter
 import json
-import requests
-import kafka.errors
-from kafka import KafkaProducer
-from kafka.admin import KafkaAdminClient, NewTopic
 import logging
+from collections import Counter
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from typing import List, Union
+
+import kafka.errors
+import requests
+from kafka.admin import KafkaAdminClient, NewTopic
+
+from kafka import KafkaProducer
 
 # Set up logging configuration
 logging.basicConfig(level=logging.INFO)
@@ -74,7 +76,9 @@ def create_kafka_producer():
     return producer
 
 
-def extract_key_values(data: Union[dict, list], flattened_data: dict, parent_key: str = ''):
+def extract_key_values(
+    data: Union[dict, list], flattened_data: dict, parent_key: str = ""
+):
     """
     Recursively extract key-value pairs from nested JSON data
     and flatten them while keeping the order of dimensions intact.
@@ -94,7 +98,9 @@ def extract_key_values(data: Union[dict, list], flattened_data: dict, parent_key
 
 
 def query_earthquakes_api() -> dict:
-    base_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
+    base_url = (
+        "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
+    )
     url = base_url
     logging.info(f"Query URL: {url}")
     response = requests.get(url)
@@ -103,58 +109,57 @@ def query_earthquakes_api() -> dict:
 
 def query_data():
     result: dict = query_earthquakes_api()
-    features: List[dict] = result['features']
-    metadata: dict = result['metadata']
+    features: List[dict] = result["features"]
+    metadata: dict = result["metadata"]
 
     data: List[EarthquakeEvent] = []
 
     for feature in features:
-        properties: dict = feature['properties']
-        geometry: List[float] = feature['geometry']['coordinates']
+        properties: dict = feature["properties"]
+        geometry: List[float] = feature["geometry"]["coordinates"]
 
         longitude = geometry[0]
         latitude = geometry[1]
         radius = geometry[2]
 
         earthquake_data: EarthquakeEvent = EarthquakeEvent(
-            generated=metadata['generated'],
-            metadata_url=metadata['url'],
-            metadata_title=metadata['title'],
-            metadata_status=metadata['status'],
-            api=metadata['api'],
-            count=metadata['count'],
-
-            mag=properties['mag'],
-            place=properties['place'],
-            time=properties['time'],
-            updated=properties['updated'],
-            tz=properties.get('tz'),
-            url=properties['url'],
-            detail=properties['detail'],
-            felt=properties.get('felt'),
-            cdi=properties.get('cdi'),
-            mmi=properties.get('mmi'),
-            alert=properties.get('alert'),
-            status=properties['status'],
-            tsunami=properties['tsunami'],
-            sig=properties['sig'],
-            net=properties['net'],
-            code=properties['code'],
-            ids=properties['ids'],
-            sources=properties['sources'],
-            types=properties['types'],
-            nst=properties['nst'],
-            dmin=properties['dmin'],
-            rms=properties['rms'],
-            gap=properties['gap'],
-            magType=properties['magType'],
-            type=feature['type'],
-            title=properties['title'],
+            generated=metadata["generated"],
+            metadata_url=metadata["url"],
+            metadata_title=metadata["title"],
+            metadata_status=metadata["status"],
+            api=metadata["api"],
+            count=metadata["count"],
+            mag=properties["mag"],
+            place=properties["place"],
+            time=properties["time"],
+            updated=properties["updated"],
+            tz=properties.get("tz"),
+            url=properties["url"],
+            detail=properties["detail"],
+            felt=properties.get("felt"),
+            cdi=properties.get("cdi"),
+            mmi=properties.get("mmi"),
+            alert=properties.get("alert"),
+            status=properties["status"],
+            tsunami=properties["tsunami"],
+            sig=properties["sig"],
+            net=properties["net"],
+            code=properties["code"],
+            ids=properties["ids"],
+            sources=properties["sources"],
+            types=properties["types"],
+            nst=properties["nst"],
+            dmin=properties["dmin"],
+            rms=properties["rms"],
+            gap=properties["gap"],
+            magType=properties["magType"],
+            type=feature["type"],
+            title=properties["title"],
             geometry_coordinates=geometry,
             longitude=longitude,
             latitude=latitude,
             radius=radius,
-            id=feature['id']
+            id=feature["id"],
         )
 
         data.append(earthquake_data)
@@ -172,7 +177,7 @@ def query_data():
 
 
 def batch(**context):
-    execution_date = context['execution_date']
+    execution_date = context["execution_date"]
     logging.info(f"Execution Date: {execution_date}")
 
     producer = create_kafka_producer()

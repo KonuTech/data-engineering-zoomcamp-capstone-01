@@ -1,8 +1,8 @@
 # https://plotly.com/python/map-configuration/
 
 
-import pandas as pd
 import altair as alt
+import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -29,11 +29,8 @@ def scattergeo(lat: list, lon: list, hovertext: list) -> None:
             hovertext=hovertext,
             mode="markers",
             marker=dict(
-                size=10,
-                opacity=1,
-                color="orangered",
-                symbol="hexagon2-open-dot"
-                ),
+                size=10, opacity=1, color="orangered", symbol="hexagon2-open-dot"
+            ),
         )
     )
 
@@ -72,11 +69,9 @@ def hourly_distribution(df: pd.DataFrame, x: str, y: str) -> None:
         )
     )
 
-    text = bars.mark_text(
-        align="center",
-        baseline="middle",
-        dy=-10
-    ).encode(text=f"{y}:O")
+    text = bars.mark_text(align="center", baseline="middle", dy=-10).encode(
+        text=f"{y}:O"
+    )
 
     st.altair_chart(bars + text, use_container_width=True)
 
@@ -113,4 +108,3 @@ def magnitude_distribution(df: pd.DataFrame, x: str, y: str) -> None:
     )
 
     st.altair_chart(bars, use_container_width=True)
-

@@ -1,13 +1,13 @@
-import os
 import logging
-from typing import Tuple, Optional
-from dotenv import load_dotenv
+import os
+from typing import Optional, Tuple
+
+import charts
 import pandas as pd
 import psycopg2
-from psycopg2 import Error
 import streamlit as st
-import charts
-
+from dotenv import load_dotenv
+from psycopg2 import Error
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -31,7 +31,7 @@ def fetch_data_from_postgres() -> Optional[Tuple[pd.DataFrame, str]]:
             password=os.getenv("POSTGRES_PASSWORD"),
             host="localhost",
             port="5432",
-            database="postgres"
+            database="postgres",
         )
 
         cursor = connection.cursor()
@@ -41,10 +41,12 @@ def fetch_data_from_postgres() -> Optional[Tuple[pd.DataFrame, str]]:
         records = cursor.fetchall()
 
         # Convert records to DataFrame
-        df = pd.DataFrame(records, columns=[column.name for column in cursor.description])
+        df = pd.DataFrame(
+            records, columns=[column.name for column in cursor.description]
+        )
 
         # Get the maximum 'generated' value
-        max_generated = df['generated'].max()
+        max_generated = df["generated"].max()
 
         logging.info("Data fetched successfully from PostgreSQL database.")
         return df, max_generated
@@ -52,6 +54,7 @@ def fetch_data_from_postgres() -> Optional[Tuple[pd.DataFrame, str]]:
     except (Exception, Error) as error:
         logging.error(f"Error while fetching data from PostgreSQL: {error}")
         return None
+
 
 def main() -> None:
     """
@@ -66,7 +69,9 @@ def main() -> None:
             initial_sidebar_state="expanded",
             layout="wide",
         )
-        st.markdown(f"<h1 style='text-align: center;'>{title}</h1>", unsafe_allow_html=True)
+        st.markdown(
+            f"<h1 style='text-align: center;'>{title}</h1>", unsafe_allow_html=True
+        )
 
         st.markdown(
             """
@@ -102,14 +107,24 @@ def main() -> None:
                         unsafe_allow_html=True,
                     )
 
-                    df['hover_text'] = df['title'].apply(lambda x: f'<span style="font-size: 20px;">{x}</span>') \
-                        + '<br><span style="font-size: 20px;">Time:</span> ' + df['time'].apply(lambda x: f'<span style="font-size: 20px;">{x}</span>') \
-                        + '<br><span style="font-size: 20px;">Geometry coordinates:</span> ' + df['geometry_coordinates'].apply(lambda x: f'<span style="font-size: 20px;">{x}</span>')
+                    df["hover_text"] = (
+                        df["title"].apply(
+                            lambda x: f'<span style="font-size: 20px;">{x}</span>'
+                        )
+                        + '<br><span style="font-size: 20px;">Time:</span> '
+                        + df["time"].apply(
+                            lambda x: f'<span style="font-size: 20px;">{x}</span>'
+                        )
+                        + '<br><span style="font-size: 20px;">Geometry coordinates:</span> '
+                        + df["geometry_coordinates"].apply(
+                            lambda x: f'<span style="font-size: 20px;">{x}</span>'
+                        )
+                    )
 
                     charts.scattergeo(
                         lat=df["latitude"].tolist(),
                         lon=df["longitude"].tolist(),
-                        hovertext=df['hover_text'],
+                        hovertext=df["hover_text"],
                     )
                 with column_1_table_2:
                     st.write("")
@@ -124,10 +139,9 @@ def main() -> None:
 
                     hours_str = ["%.2d" % i for i in range(24)]
                     x_label = [f"{x}:00 - {x}:59" for x in hours_str]
-                    df['time'] = pd.to_datetime(df['time'], utc=True)
+                    df["time"] = pd.to_datetime(df["time"], utc=True)
                     hourly_earthquake_count = [
-                        len(df[df['time'].dt.hour == hour])
-                        for hour in range(24)
+                        len(df[df["time"].dt.hour == hour]) for hour in range(24)
                     ]
 
                     chart_data1 = pd.DataFrame(
@@ -152,7 +166,9 @@ def main() -> None:
 
                     magnitudes = sorted(df["mag"].unique())
                     events = [len(df.loc[df["mag"] == mag]) for mag in magnitudes]
-                    chart_data2 = pd.DataFrame({"Magnitude": magnitudes, "Number of Events": events})
+                    chart_data2 = pd.DataFrame(
+                        {"Magnitude": magnitudes, "Number of Events": events}
+                    )
                     charts.magnitude_distribution(
                         df=chart_data2, x="Magnitude", y="Number of Events"
                     )
@@ -167,16 +183,19 @@ def main() -> None:
             )
 
             # Display the most recent rows
-            st.table(df[
-                [
-                    "generated",
-                    "metadata_url",
-                    "metadata_title",
-                    "title",
-                    "time",
-                    "geometry_coordinates",
-                    "id"
-                ]].tail())
+            st.table(
+                df[
+                    [
+                        "generated",
+                        "metadata_url",
+                        "metadata_title",
+                        "title",
+                        "time",
+                        "geometry_coordinates",
+                        "id",
+                    ]
+                ].tail()
+            )
 
         else:
             st.warning("No values to show")

@@ -1,13 +1,15 @@
-from dataclasses import dataclass, field
-from typing import List, Union
-from collections import Counter
 import json
-import requests
-import kafka.errors
-from kafka import KafkaProducer
-from kafka.admin import KafkaAdminClient, NewTopic
 import logging
+from collections import Counter
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from typing import List, Union
+
+import kafka.errors
+import requests
+from kafka.admin import KafkaAdminClient, NewTopic
+
+from kafka import KafkaProducer
 
 # Set up logging configuration
 logging.basicConfig(level=logging.INFO)
@@ -74,7 +76,9 @@ def create_kafka_producer():
     return producer
 
 
-def extract_key_values(data: Union[dict, list], flattened_data: dict, parent_key: str = ''):
+def extract_key_values(
+    data: Union[dict, list], flattened_data: dict, parent_key: str = ""
+):
     """
     Recursively extract key-value pairs from nested JSON data
     and flatten them while keeping the order of dimensions intact.
@@ -99,11 +103,14 @@ def query_earthquakes_api(params: dict) -> dict:
         key: value.isoformat() if isinstance(value, datetime) else value
         for key, value in params.items()
     }
-    url = base_url + '?' + '&'.join([f"{key}={value}" for key, value in formatted_params.items()])
+    url = (
+        base_url
+        + "?"
+        + "&".join([f"{key}={value}" for key, value in formatted_params.items()])
+    )
     logging.info(f"Query URL: {url}")
     response = requests.get(url)
     return response.json()
-
 
 
 def query_data(start_time, end_time):
@@ -114,62 +121,61 @@ def query_data(start_time, end_time):
         "format": "geojson",
         "starttime": start_time_iso,
         "endtime": end_time_iso,
-        "minmagnitude": "0"
+        "minmagnitude": "0",
     }
 
     result: dict = query_earthquakes_api(params)
-    features: List[dict] = result['features']
-    metadata: dict = result['metadata']
+    features: List[dict] = result["features"]
+    metadata: dict = result["metadata"]
 
     data: List[EarthquakeEvent] = []
 
     for feature in features:
-        properties: dict = feature['properties']
-        geometry: List[float] = feature['geometry']['coordinates']
+        properties: dict = feature["properties"]
+        geometry: List[float] = feature["geometry"]["coordinates"]
 
         longitude = geometry[0]
         latitude = geometry[1]
         radius = geometry[2]
 
         earthquake_data: EarthquakeEvent = EarthquakeEvent(
-            generated=metadata['generated'],
-            metadata_url=metadata['url'],
-            metadata_title=metadata['title'],
-            metadata_status=metadata['status'],
-            api=metadata['api'],
-            count=metadata['count'],
-
-            mag=properties['mag'],
-            place=properties['place'],
-            time=properties['time'],
-            updated=properties['updated'],
-            tz=properties.get('tz'),
-            url=properties['url'],
-            detail=properties['detail'],
-            felt=properties.get('felt'),
-            cdi=properties.get('cdi'),
-            mmi=properties.get('mmi'),
-            alert=properties.get('alert'),
-            status=properties['status'],
-            tsunami=properties['tsunami'],
-            sig=properties['sig'],
-            net=properties['net'],
-            code=properties['code'],
-            ids=properties['ids'],
-            sources=properties['sources'],
-            types=properties['types'],
-            nst=properties['nst'],
-            dmin=properties['dmin'],
-            rms=properties['rms'],
-            gap=properties['gap'],
-            magType=properties['magType'],
-            type=feature['type'],
-            title=properties['title'],
+            generated=metadata["generated"],
+            metadata_url=metadata["url"],
+            metadata_title=metadata["title"],
+            metadata_status=metadata["status"],
+            api=metadata["api"],
+            count=metadata["count"],
+            mag=properties["mag"],
+            place=properties["place"],
+            time=properties["time"],
+            updated=properties["updated"],
+            tz=properties.get("tz"),
+            url=properties["url"],
+            detail=properties["detail"],
+            felt=properties.get("felt"),
+            cdi=properties.get("cdi"),
+            mmi=properties.get("mmi"),
+            alert=properties.get("alert"),
+            status=properties["status"],
+            tsunami=properties["tsunami"],
+            sig=properties["sig"],
+            net=properties["net"],
+            code=properties["code"],
+            ids=properties["ids"],
+            sources=properties["sources"],
+            types=properties["types"],
+            nst=properties["nst"],
+            dmin=properties["dmin"],
+            rms=properties["rms"],
+            gap=properties["gap"],
+            magType=properties["magType"],
+            type=feature["type"],
+            title=properties["title"],
             geometry_coordinates=geometry,
             longitude=longitude,
             latitude=latitude,
             radius=radius,
-            id=feature['id']
+            id=feature["id"],
         )
 
         data.append(earthquake_data)
@@ -187,7 +193,7 @@ def query_data(start_time, end_time):
 
 
 def minibatch(**context):
-    execution_date = context['execution_date']  # UTC 
+    execution_date = context["execution_date"]  # UTC
     logging.info(f"Execution Date: {execution_date}")
 
     current_time = datetime.fromisoformat(execution_date)
