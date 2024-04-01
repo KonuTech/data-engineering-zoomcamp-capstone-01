@@ -93,7 +93,7 @@ To ensure reproducibility and set up your project environment, follow these guid
    - Activate the virtual environment using the appropriate command based on your operating system:
      - For Windows:
        ```
-       source .venv\Scripts\activate
+       source .venv/Scripts/activate
        ```
      - For Unix/Mac:
        ```
@@ -157,7 +157,7 @@ To ensure reproducibility and set up your project environment, follow these guid
       ```
 
 
-You can try to do all of the above steps at once using setup.sh script:
+If above steps will fail try to use setup.sh script:
    - Ensure the setup script `setup.sh` is executable:
      ```
      chmod +x setup.sh

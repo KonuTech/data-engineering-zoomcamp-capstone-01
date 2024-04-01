@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS public.earthquakes;
 CREATE TABLE public.earthquakes (
     generated TIMESTAMP WITH TIME ZONE,
     metadata_url TEXT,

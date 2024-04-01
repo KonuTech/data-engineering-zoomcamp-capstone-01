@@ -1,8 +1,8 @@
 import json
 import logging
 from collections import Counter
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from dataclasses import dataclass
+from datetime import datetime
 from typing import List, Union
 
 import kafka.errors
