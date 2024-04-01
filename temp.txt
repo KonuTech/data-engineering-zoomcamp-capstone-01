@@ -26,6 +26,8 @@ chmod +x setup.sh
 ./setup.sh
 
 
+streamlit run ./scripts/dashboard.py
+
 ######################################################################################################################################################
 
 https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson
