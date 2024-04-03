@@ -185,6 +185,7 @@ Please use the screenshots below to visually validate if all of the steps/proces
 Once the Kafka and Airflow images are up and running, the Docker Desktop view of a container should look as shown in the screenshot below.
 
 <img src="static/docker_01.jpg" width="60%"/>
+
 ```
 For Airflow try: localhost:8080
 ```
@@ -226,7 +227,6 @@ Hopefully, you were able to make all the pieces work together. Happy coding.
     * Batch / Workflow orchestration
         * 4 points: End-to-end pipeline: multiple steps in the DAG, uploading data to data lake
 * Data warehouse
-    * 0 points: No DWH is used
     * 2 points: Tables are created in DWH, but not optimized
 * Transformations (dbt, spark, etc)
     * 4 points: Tranformations are defined with dbt, Spark or similar technologies
