@@ -14,7 +14,9 @@ default_args = {
     "retries": 2,  # number of retries before failing the task
     "retry_delay": timedelta(seconds=5),
     "timezone": "America/Los_Angeles",
-    "depends_on_past": False,
+    "depends_on_past": True,
+    'catchup': True,
+    'backfill': True
 }
 
 
