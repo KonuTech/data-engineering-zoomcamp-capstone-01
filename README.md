@@ -17,11 +17,6 @@ The data being used for this project comes from a publicly available provider, n
 
 Aligned with its mission, the USGS provides access to an Application Programming Interface (API) that offers information about the history of earthquakes, free of charge. This API facilitates access to up-to-date earthquake data, including recent events. For specific details regarding the frequency of earthquake data updates, please refer to the relevant [page](https://www.usgs.gov/faqs/how-quickly-earthquake-information-posted-usgs-website-and-sent-out-earthquake-notification) on the USGS website.
 
-
-The data being used for this project comes from a publicly available provider, namely, the U.S. Geological Survey (USGS). The USGS, as outlined on its 'About Us' page, serves as the science arm of the Department of the Interior, offering a diverse range of earth, water, biological, and mapping data and expertise to support decision-making on environmental, resource, and public safety issues. Established by an act of Congress in 1879, the USGS continuously adapts its scientific endeavors to address the evolving needs of society.
-
-Aligned with its mission, the USGS provides access to an Application Programming Interface (API) that offers information about the history of earthquakes, free of charge. This API facilitates access to up-to-date earthquake data, including recent events. For specific details regarding the frequency of earthquake data updates, please refer to the relevant page on the USGS website.
-
 The convenience of the data being updated quite frequently aligns with my concept for the development of a so-called minibatch data pipeline. As previously mentioned, data is retrieved via API using Apache Kafka, transformed using PySpark, and ingested into a PostgreSQL table. Ultimately, this data is visualized using Streamlit, contributing to a comprehensive analysis and understanding of seismic activity trends.
 
 In addition to the described data pipeline components, two separate Airflow Directed Acyclic Graphs (DAGs) are utilized. The first DAG operates on a minibatch basis with a 5-minute interval, while the second DAG is a daily batch process.
@@ -150,6 +145,9 @@ To ensure reproducibility and set up your project environment, follow these guid
      docker rmi earthquakes/spark:latest
      ```
 
+9. **PostgreSQL**
+   - Remember to create a table in PostgreSQL using the schema stored under scripts/earthquakes.sql.
+
 10. **Run Streamlit Dashboard**:
     - Execute the Streamlit dashboard script located at `./scripts/dashboard.py`:
       ```
@@ -204,11 +202,11 @@ For Kafka UI try: localhost:8000
 
 <img src="static/kafka_01.jpg" width="60%"/>
 
-Each time the PySpark script is run, a new image will be pulled. The image is up and running only during the processing of the PySpark script. Check DockerOperator() in DAGs.
+Each time the PySpark script is run, a new image will be pulled. The image is up and running only during the processing of the PySpark script. Check `DockerOperator()` in DAGs for mote details.
 
 <img src="static/docker_02.jpg" width="60%"/>
 
-Remember to create a table in PostgreSQL using the schema stored under scripts/earthquakes.sql. The screenshot below shows exemplary data entries pulled from the API using Airflow DAGs.
+The screenshot below shows exemplary data entries pulled from the API using Airflow DAGs.
 
 <img src="static/postgresql_01.jpg" width="60%"/>
 
@@ -216,7 +214,7 @@ Finally, the Streamlit application shows the data stored as a PostgreSQL table a
 
 <img src="static/streamlit_01.jpg" width="60%"/>
 
-Hopefully, you were able to make all the pieces work together. Happy coding.
+Hopefully, you were able to make all the pieces work together. Hopefully, you now feel empowered to do Data Engineering on your own. Happy coding :)
 
 ### Peer review criterias - a self assassment:
 * Problem description
