@@ -122,7 +122,7 @@ To ensure reproducibility and set up your project environment, follow these guid
      ```
      echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_PROJ_DIR=\"./airflow_resources\"" > .env
      ```
-    Add POSTGRES_PASSWORD="" to .env, along with password you use to connect to PostgreSQL.
+    - Add POSTGRES_PASSWORD="" to .env, along with password you use to connect to PostgreSQL.
 6. **Kafka Setup**:
    - Start Kafka services using Docker Compose:
      ```
